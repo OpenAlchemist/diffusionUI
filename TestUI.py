@@ -1,1 +1,1 @@
-print("hello Mobile git edit!")
+print("hello Mobile vsdev edit!")
