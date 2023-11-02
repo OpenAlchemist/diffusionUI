@@ -1,1 +1,1 @@
-print("hello diffusers!")
+print("hello vscode!")
