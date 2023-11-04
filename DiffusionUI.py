@@ -40,7 +40,7 @@ def build_ui():
 	models_container = widgets.Tab()
 	models_container.children = [widgets.VBox([
 		checkpoint_et,
-		custom_pipeline_et, 
+		#custom_pipeline_et, 
 		load_checkpoint_btn
 	]), textual_inversion_et, hypernetwork_et, lora_et]
 	models_container.set_title(0, "Checkpoint")
@@ -126,7 +126,8 @@ def display_ui():
 def onclick_load_checkpoint(button):
 	with log_output:
 		clear_output()
-		diffuser.build_pipeline(checkpoint_et.value, custom_pipeline_et.value)
+		#diffuser.build_pipeline(checkpoint_et.value, custom_pipeline_et.value)
+		diffuser.build_pipeline(checkpoint_et.value, None)
 		clear_output()
 
 def onclick_generate(button):
