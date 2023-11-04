@@ -1,2 +1,3 @@
 import test as tt
-tt.p()
+def maketest():
+  tt.p()
