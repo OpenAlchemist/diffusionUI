@@ -25,7 +25,7 @@ def build_ui():
 	global checkpoint_et, custom_pipeline_et, lora_et, textual_inversion_et, hypernetwork_et
 	global prompt_et, neg_prompt_et
 	global steps_slider, width_slider, height_slider, cfg_slider, seed_et, rand_seed_cb
-	global generate_btn, progress_output, generated_iv , ui_container
+	global generate_btn, progress_output, generated_iv , ui_container, log_output
 
 	checkpoint_et = widgets.Text(description="Checkpoint:", value='/kaggle/input/photovision-xl')
 	custom_pipeline_et = widgets.Text(description="Pipeline:", value='lpw_stable_diffusion' placeholder='Custom Community Pipeline')
@@ -74,6 +74,7 @@ def build_ui():
 	generate_btn = widgets.Button(description="Generate")
 	generate_btn.on_click(onclick_generate)
 	progress_output = widgets.Output()
+	log_output = widgets.Output()
 
 	
 	# Create an image widget
@@ -109,7 +110,8 @@ def build_ui():
 				widgets.HBox([generate_btn, progress_output]),
 				generated_iv
 			])
-		])
+		]),
+		log_output
 	])
 
 
@@ -122,7 +124,10 @@ def display_ui():
 
 
 def onclick_load_checkpoint(button):
-	diffuser.build_pipeline(checkpoint_et.value, custom_pipeline_et.value)
+	with log_output:
+		clear_output()
+		diffuser.build_pipeline(checkpoint_et.value, custom_pipeline_et.value)
+		clear_output()
 
 def onclick_generate(button):
 	global image
