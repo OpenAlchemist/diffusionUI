@@ -40,6 +40,10 @@ def update_pipeline(custom_pipeline):
 	pipeline = DiffusionPipeline.from_config(pipeline, custom_pipeline=custom_pipeline)
 
 def build_pipeline(repository, custom_pipeline):
+	if custom_pipeline: create_pipeline(repository, custom_pipeline)
+	else: create_pipeline(repository, None)
+
+def create_pipeline(repository, custom_pipeline):
 	global pipeline
 	pipeline = DiffusionPipeline.from_pretrained(
 					repository, 
