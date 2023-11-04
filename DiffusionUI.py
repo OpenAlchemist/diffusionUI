@@ -28,7 +28,7 @@ def build_ui():
 	global generate_btn, progress_output, generated_iv , ui_container, log_output
 
 	checkpoint_et = widgets.Text(description="Checkpoint:", value='/kaggle/input/photovision-xl')
-	custom_pipeline_et = widgets.Text(description="Pipeline:", value='lpw_stable_diffusion' placeholder='Custom Community Pipeline')
+	custom_pipeline_et = widgets.Text(description="Pipeline:", value='lpw_stable_diffusion', placeholder='Custom Community Pipeline')
 	load_checkpoint_btn = widgets.Button(description="Load")
 	load_checkpoint_btn.on_click(onclick_load_checkpoint)
 
