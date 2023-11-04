@@ -10,7 +10,7 @@ import torch
 import time
 import sys
 import os
-import gc  #garbage collector
+import gc
 
 
 
