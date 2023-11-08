@@ -1,7 +1,7 @@
 from io import BytesIO
-from os import path
-import threading
-import zipfile
+#from os import path
+#import threading
+#import zipfile
 import shutil
 import time
 import os

@@ -1,11 +1,7 @@
 from diffusers import DiffusionPipeline
-from IPython.display import display, clear_output
-import ipywidgets as widgets
 from io import BytesIO
 from os import path
 import threading
-import zipfile
-import shutil
 import torch
 import time
 import sys
@@ -13,48 +9,69 @@ import os
 import gc
 
 
-
-
-
-variant = "fp16"
-torch_dtype = torch.float16
-
+images = None
 pipeline = None
-tor_gen = None
-
-device = "cuda"
-#gpu0 = torch.device("cuda:0")
-#gpu1 = torch.device("cuda:1")
 
 
-is_init = False
+#_is_init = False
 
 def init():
-	global is_init, tor_gen
-	if is_init: return
-	tor_gen = torch.Generator(device)
-	is_init = True
+	global _is_init, _variant, _torch_dtype, _device, _tor_gen
+	if not _is_init:
+		_variant = "fp16"
+		_torch_dtype = torch.float16
+		#_tor_gen = None
+		#_gpu0 = torch.device("cuda:0")
+		#_gpu1 = torch.device("cuda:1")
+		_device = "cuda"
+		_tor_gen = torch.Generator(_device)
+		_is_init = True
 
 def update_pipeline(custom_pipeline):
 	global pipeline
 	pipeline = DiffusionPipeline.from_config(pipeline, custom_pipeline=custom_pipeline)
 
 def build_pipeline(repository, custom_pipeline):
-	if custom_pipeline: create_pipeline(repository, custom_pipeline)
-	else: create_pipeline(repository, None)
+	if custom_pipeline: _create_pipeline(repository, custom_pipeline)
+	else: _create_pipeline(repository, None)
 
-def create_pipeline(repository, custom_pipeline):
+def _create_pipeline(repository, custom_pipeline):
 	global pipeline
 	pipeline = DiffusionPipeline.from_pretrained(
-					repository, 
-					variant=variant, 
-					torch_dtype=torch_dtype, 
-					custom_pipeline=custom_pipeline,
-					safety_checker=None, 
-					feature_extractor=None, 
-					requires_safety_checker=False).to(device)
+		repository, 
+		variant=_variant, 
+		torch_dtype=_torch_dtype, 
+		custom_pipeline=custom_pipeline,
+		safety_checker=None, 
+		feature_extractor=None, 
+		requires_safety_checker=False
+	).to(_device)
+	
 	#pipeline.set_progress_bar_config(disable=True)
 	#pipeline.enable_xformers_memory_efficient_attention()
+
+def generate_seed():
+	return _tor_gen.seed()
+
+def load_lora(repository):
+	''' Example repository:
+	online: "ostris/ikea-instructions-lora-sdxl"
+	Local: "/kaggle/input/locallora"
+	'''
+	# weight_name is optional
+	# pipeline.load_lora_weights(repository, weight_name="mylora.safetensors")
+	pipeline.load_lora_weights(repository)
+
+def unload_lora():
+	pipeline.unload_lora_weights()
+
+
+def fuse_lora(scale):
+	'scale 0.00 to 1.00'
+	pipeline.fuse_lora(lora_scale=scale)
+
+def unfuse_lora():
+	pipeline.unfuse_lora()
 
 
 def clear_gpu():
@@ -75,5 +92,19 @@ def load_lora(model_path):
 def unload_lora():
 	pipeline.unload_lora_weights()
 
+def generate(prompt, negative_prompt, width, height, seed, guidance_scale, num_inference_steps):
+	global images
+
+	images = pipeline(
+			prompt,
+			negative_prompt = negative_prompt,
+			width = width,
+			height = height,
+			generator = _tor_gen.manual_seed(seed),
+			guidance_scale = guidance_scale,
+			num_inference_steps = num_inference_steps
+		).images
+
+	return images
 
 
